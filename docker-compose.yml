@@ -1,0 +1,76 @@
+version: '3'
+services:
+
+    postgres:
+        image: postgres:13.2
+        environment:
+            POSTGRES_USER : airflow
+            POSTGRES_PASSWORD: airflow
+            POSTGRES_DB : airflow
+            AIRFLOW_SCHEMA: airflow
+        # expose: 5432
+        ports:
+            - 5432:5432
+        # restart: always
+        volumes:
+            - ./scripts_postgres:/docker-entrypoint-initdb.d
+    postgres-dbt:
+        image: postgres:13.2
+        environment:
+            POSTGRES_PASSWORD: dbtpass
+            POSTGRES_USER : dbtuser
+            POSTGRES_DB : dbtdb
+            DBT_SCHEMA: dbt
+            DBT_RAW_DATA_SCHEMA: dbt_raw_data
+        ports:
+            - 5433:5433
+        command: -p 5433
+        restart: always
+        volumes:
+            - ./data:/data
+
+    airflow:
+        image: airflow
+        container_name: dbt-airflow
+        build:
+            context: .
+            dockerfile: airflow/Dockerfile
+
+        restart: always
+        # env_file:
+        #     - dev.env\
+        environment:
+            AIRFLOW_HOME: /airflow
+            AIRFLOW__CORE__DAGS_FOLDER: /airflow/dags
+
+            POSTGRES_USER: airflow
+            POSTGRES_PASSWORD: airflow
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_DB: airflow
+
+            DBT_PROFILES_DIR: /dbt
+            # postgres-dbt connection details.
+            DBT_POSTGRES_USER : dbtuser
+            DBT_POSTGRES_PASSWORD: dbtpass
+            DBT_POSTGRES_DB : dbtdb
+            DBT_DBT_SCHEMA: dbt
+            DBT_DBT_RAW_DATA_SCHEMA: dbt_raw_data
+            DBT_POSTGRES_HOST: postgres-dbt
+            DBT_POSTGRES_PORT: 5433
+        depends_on:
+            - postgres
+            - postgres-dbt
+        links:
+            - postgres:db
+        ports:
+        - 8080:8080
+        volumes:
+            - ./airflow:/airflow
+            - ./dbt:/dbt
+            - ./data:/data
+
+
+
+
+

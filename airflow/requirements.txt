@@ -1,0 +1,2 @@
+mintapi==1.66
+PyYAML==5.4.1

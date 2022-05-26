@@ -1,0 +1,18 @@
+# Dev environment
+/.vscode
+
+# Airflow runtime
+airflow/logs
+airflow/airflow-webserver.pid
+
+# Python
+__pycache__/
+*.py[cod]
+.python-version
+
+# Login Credentials
+creds*
+profiles*
+
+# dbt hidden variables
+dbt_project*

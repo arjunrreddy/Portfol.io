@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  # - name: mint
+  #   schema: testing_schema
+  #   tables:
+  #     - name: test_table
+  - name: dw_staging
+    schema: dw_staging
+    tables:
+      - name: account_data
+      - name: networth_historical
+      - name: investment_distribution
+      - name: assett_class_split
+      - name: dates
+  - name: dbt
+    schema: dbt
+    tables:
+      - name: stock_distribution
+      - name: networth
